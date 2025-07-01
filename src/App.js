@@ -1,6 +1,10 @@
+// src/App.js
 import { useEffect, useState } from "react";
-import { logSession, fetchSession, signMessage, verifySignature } from "./contractUtils";
+import { logSession, fetchSession, signMessage } from "./contractUtils";
+import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
+import SessionGate from "./SessionGate";
+import TrustBadge from "./TrustBadge";
 
 export default function App() {
   const [pseudonymID, setPseudonymID] = useState("");
@@ -25,20 +29,25 @@ export default function App() {
     if (!pseudonymID || !sessionHash || !trustScore) return toast.error("Fill all fields");
 
     try {
-      toast.loading("Signing and logging session...");
       const message = `SessionHash:${sessionHash}::Score:${trustScore}`;
       const signature = await signMessage(message);
-      const isValid = await verifySignature(message, signature, account);
+      console.log("✍️ Signed Message:", signature);
 
-      if (!isValid) {
-        toast.dismiss();
-        toast.error("Signature verification failed");
+      const recoveredAddress = ethers.verifyMessage(message, signature);
+      console.log("✅ Recovered Address:", recoveredAddress);
+
+      if (recoveredAddress.toLowerCase() !== account.toLowerCase()) {
+        toast.error("Signature verification failed!");
         return;
+      } else {
+        toast.success("Signature verified ✅");
       }
 
+      toast.loading("Logging session...");
       await logSession(pseudonymID, sessionHash, trustScore);
       toast.dismiss();
       toast.success("Session logged successfully");
+
     } catch (err) {
       toast.dismiss();
       toast.error("Failed to log session");
@@ -108,12 +117,17 @@ export default function App() {
         </div>
 
         {fetched && (
-          <div className="mt-8 bg-gray-800 p-4 rounded-xl text-sm">
-            <p><strong>Session Hash:</strong> {fetched.sessionHash}</p>
-            <p><strong>Trust Score:</strong> {fetched.trustScore}</p>
-            <p><strong>Timestamp:</strong> {fetched.timestamp}</p>
-          </div>
+          <>
+            <div className="mt-8 bg-gray-800 p-4 rounded-xl text-sm">
+              <p><strong>Session Hash:</strong> {fetched.sessionHash}</p>
+              <p><strong>Trust Score:</strong> {fetched.trustScore}</p>
+              <p><strong>Timestamp:</strong> {fetched.timestamp}</p>
+            </div>
+            <SessionGate trustScore={fetched.trustScore} />
+            <TrustBadge trustScore={fetched.trustScore} />
+          </>
         )}
+
       </div>
     </div>
   );
