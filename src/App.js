@@ -1,17 +1,15 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import SessionManager from "./SessionManager";
 import AdminLogin from "./AdminLogin";
 import AdminDashboard from "./AdminDashboard";
-import SessionManager from "./SessionManager";
 
 function App() {
   return (
-    <Router basename="/">
-      <Routes>
-        <Route path="/" element={<SessionManager />} />
-        <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/dashboard" element={<AdminDashboard />} />
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="/" element={<SessionManager />} />
+      <Route path="/admin" element={<AdminLogin />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+    </Routes>
   );
 }
 
