@@ -11,7 +11,7 @@ export default function Admin() {
   const handleFetch = async () => {
     try {
       toast.loading("Fetching session...");
-      const data = await fetchSession(pseudonymID);
+      const data = await fetchSession(ethers.encodeBytes32String(pseudonymID));
       toast.dismiss();
       setSession(data);
     } catch (err) {

@@ -62,7 +62,7 @@ export default function SessionManager() {
 
   const handleFetch = async () => {
     try {
-      const result = await fetchSession(pseudonymID);
+      const result = await fetchSession(ethers.encodeBytes32String(pseudonymID));
       setFetched(result);
     } catch (err) {
       toast.error("Failed to fetch session");
