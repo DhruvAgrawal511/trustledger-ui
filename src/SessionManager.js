@@ -41,7 +41,8 @@ export default function SessionManager() {
       }
 
       toast.loading("Logging session...");
-      await logSession(pseudonymID, sessionHash, trustScore);
+      const formattedPseudonymID = ethers.encodeBytes32String(pseudonymID);
+      await logSession(formattedPseudonymID, sessionHash, trustScore);
       toast.dismiss();
       toast.success("Session logged successfully");
     } catch (err) {
@@ -53,7 +54,7 @@ export default function SessionManager() {
 
   const handleFetch = async () => {
     try {
-      const result = await fetchSession(pseudonymID);
+      const result = await fetchSession(ethers.encodeBytes32String(pseudonymID));
       setFetched(result);
     } catch (err) {
       toast.error("Failed to fetch session");
