@@ -46,7 +46,11 @@ export default function SessionManager() {
       }
 
       toast.loading("Logging session...");
-      await logSession(pseudonymID, sessionHash, trustScore);
+      await logSession(ethers.encodeBytes32String(pseudonymID),
+         ethers.encodeBytes32String(sessionHash),
+            trustScore
+);
+
       toast.dismiss();
       toast.success("Session logged successfully");
     } catch (err) {
