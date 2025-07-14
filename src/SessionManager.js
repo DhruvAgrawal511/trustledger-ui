@@ -62,9 +62,12 @@ export default function SessionManager() {
   };
 
   useEffect(() => {
-  const encoded = ethers.encodeBytes32String(pseudonymID);
-  console.log("Encoded pseudonym:", encoded);
-}, []);
+  if (pseudonymID) {
+    const encoded = ethers.encodeBytes32String(pseudonymID);
+    console.log("Encoded pseudonym:", encoded);
+  }
+}, [pseudonymID]);
+
 
   const handleFetch = async () => {
     try {
