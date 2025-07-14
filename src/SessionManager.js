@@ -1,4 +1,3 @@
-// src/SessionManager.js
 import { useEffect, useState } from "react";
 import { logSession, fetchSession, signMessage } from "./contractUtils";
 import { ethers } from "ethers";
@@ -26,7 +25,13 @@ export default function SessionManager() {
   }, []);
 
   const handleLog = async () => {
-    if (!pseudonymID || !sessionHash || !trustScore) return toast.error("Fill all fields");
+    if (!pseudonymID || !sessionHash || !trustScore)
+      return toast.error("Fill all fields");
+
+    if (pseudonymID.length > 31 || sessionHash.length > 31) {
+      toast.error("Pseudonym ID and Session Hash must be ≤ 31 characters.");
+      return;
+    }
 
     try {
       const message = `SessionHash:${sessionHash}::Score:${trustScore}`;
@@ -41,8 +46,7 @@ export default function SessionManager() {
       }
 
       toast.loading("Logging session...");
-      const formattedPseudonymID = ethers.encodeBytes32String(pseudonymID);
-      await logSession(formattedPseudonymID, sessionHash, trustScore);
+      await logSession(pseudonymID, sessionHash, trustScore);
       toast.dismiss();
       toast.success("Session logged successfully");
     } catch (err) {
@@ -54,7 +58,7 @@ export default function SessionManager() {
 
   const handleFetch = async () => {
     try {
-      const result = await fetchSession(ethers.encodeBytes32String(pseudonymID));
+      const result = await fetchSession(pseudonymID);
       setFetched(result);
     } catch (err) {
       toast.error("Failed to fetch session");
@@ -76,7 +80,7 @@ export default function SessionManager() {
         <input
           className="bg-gray-800 border border-gray-700 p-3 w-full mb-4 rounded-xl text-sm"
           type="text"
-          placeholder="Pseudonym ID (32-byte hex)"
+          placeholder="Pseudonym ID (≤ 31 characters)"
           value={pseudonymID}
           onChange={(e) => setPseudonymID(e.target.value)}
         />
@@ -84,7 +88,7 @@ export default function SessionManager() {
         <input
           className="bg-gray-800 border border-gray-700 p-3 w-full mb-4 rounded-xl text-sm"
           type="text"
-          placeholder="Session Hash (32-byte hex)"
+          placeholder="Session Hash (≤ 31 characters)"
           value={sessionHash}
           onChange={(e) => setSessionHash(e.target.value)}
         />
