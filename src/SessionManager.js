@@ -24,6 +24,7 @@ export default function SessionManager() {
     connectWallet();
   }, []);
 
+
   const handleLog = async () => {
     if (!pseudonymID || !sessionHash || !trustScore)
       return toast.error("Fill all fields");
@@ -59,6 +60,11 @@ export default function SessionManager() {
       console.error(err);
     }
   };
+
+  useEffect(() => {
+  const encoded = ethers.encodeBytes32String(pseudonymID);
+  console.log("Encoded pseudonym:", encoded);
+}, []);
 
   const handleFetch = async () => {
     try {
