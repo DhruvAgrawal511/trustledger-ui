@@ -9,6 +9,7 @@ function App() {
       <Route path="*" element={<SessionManager />} />
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      
     </Routes>
   );
 }
